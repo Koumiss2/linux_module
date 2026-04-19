@@ -1,9 +1,11 @@
 #include <linux/module.h>
 #include "icmp_proc_cfg.h"
 
-ip_addr = in_aton(IP_ADDR_DEFAULT);
+__be32 ip_addr = 0;
 
 static int __init hooks_init(void) {
+    ip_addr = in_aton(IP_ADDR_DEFAULT);
+
     if (proc_ip_init()) {
         return 1;
     }
