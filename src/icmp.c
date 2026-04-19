@@ -1,6 +1,8 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
 #include <linux/ip.h>
+#include <linux/icmp.h>
+#include <linux/etherdevice.h>
 #include "ping_config.h"
 
 /* Swap mac and ip addr in eth packet for L2|l3 in OSI*/
@@ -21,7 +23,7 @@ static void swap_addresses(struct sk_buff *skb) {
 
 static void update_checksums(struct sk_buff *skb, struct iphdr *iph, struct icmphdr *icmph) {
     icmph->checksum = 0;
-    icmph->checksum = ip_compute_csum(icmph, skb->len - ip_hdrlen(skb));
+    icmph->checksum = ip_compute_csum(icmph, skb->len - (iph->ihl * 4));
     iph->check = 0;
     iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
 }
@@ -51,7 +53,7 @@ static unsigned int icmp_hook(void *priv, struct sk_buff *skb, const struct nf_h
     update_checksums(skb, iph, icmph);
 
     dev_queue_xmit(skb);
-    
+
     return NF_STOLEN;
 }
 
