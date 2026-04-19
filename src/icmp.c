@@ -3,7 +3,21 @@
 #include <linux/ip.h>
 #include "ping_config.h"
 
-static void swap_addresses(struct sk_buff *skb);
+/* Swap mac and ip addr in eth packet for L2|l3 in OSI*/
+static void swap_addresses(struct sk_buff *skb) {
+    struct ethhdr *eth = eth_hdr(skb);
+    struct iphdr *iph = ip_hdr(skb);
+    __be32 tmp_ip;
+    unsigned char tmp_mac[ETH_ALEN];
+
+    ether_addr_copy(tmp_mac, eth->h_source);
+    ether_addr_copy(eth->h_source, eth->h_dest);
+    ether_addr_copy(eth->h_dest, tmp_mac);
+
+    tmp_ip = iph->saddr;
+    iph->saddr = iph->daddr;
+    iph->daddr = tmp_ip;
+}
 static void update_checksums(struct sk_buff *skb, struct iphdr *iph, struct icmphdr *icmph);
 
 static unsigned int icmp_hook(void *priv, struct sk_buff *skb, const struct nf_hook_state *state) {
