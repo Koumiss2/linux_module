@@ -4,7 +4,7 @@
 
 
 static int proc_ip_show(struct seq_file *m, void *v) {
-    seq_printf(m, "IPv4: %pI4\n", &ip_addr);
+    seq_printf(m, "%pI4\n", &ip_addr);
     return 0;
 }
 
