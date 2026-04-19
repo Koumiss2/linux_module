@@ -4,15 +4,18 @@
 __be32 ip_addr = 0;
 
 static int __init hooks_init(void) {
+    int err;
     ip_addr = in_aton(IP_ADDR_DEFAULT);
 
-    if (proc_ip_init()) {
-        return 1;
+    err = init_proc_ip();
+
+    if (err) {
+        return err;
     }
     return 0;
 }
 static void __exit hooks_deinit(void){
-    proc_ip_deinit();
+    init_proc_ip();
 }
 
 module_init(hooks_init);
