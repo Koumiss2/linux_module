@@ -1,6 +1,6 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
-#include "icmp_proc_cfg.h"
+#include "ping_config.h"
 
 /*TODO: now it only printing ip_addr in procfs for tests*/
 

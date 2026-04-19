@@ -1,5 +1,5 @@
 #include <linux/module.h>
-#include "icmp_proc_cfg.h"
+#include "ping_config.h"
 
 __be32 ip_addr = 0;
 
