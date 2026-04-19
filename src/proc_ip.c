@@ -2,7 +2,6 @@
 #include <linux/seq_file.h>
 #include "ping_config.h"
 
-/*TODO: now it only printing ip_addr in procfs for tests*/
 
 static int proc_ip_show(struct seq_file *m, void *v) {
     seq_printf(m, "IPv4: %pI4\n", &ip_addr);
