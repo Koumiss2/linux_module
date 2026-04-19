@@ -1,6 +1,6 @@
 ifneq ($(KERNELRELEASE),)
 
-ccflags-y := -I$(src)/inc
+ccflags-y += -I$(M)/inc
 
 obj-m := ping_mod.o
 ping_mod-y := src/main.o src/icmp.o src/proc_ip.o
@@ -8,9 +8,10 @@ ping_mod-y := src/main.o src/icmp.o src/proc_ip.o
 else
 
 SDK_PATH = $(HOME)/openwrt-sdk-23.05.0-x86-64_gcc-12.3.0_musl.Linux-x86_64
+export STAGING_DIR = $(SDK_PATH)/staging_dir
 KERNEL_DIR = $(shell find $(SDK_PATH)/build_dir -name "linux-5.15*" -type d | head -n 1)
-TOOLCHAIN_BIN = $(shell find $(SDK_PATH)/staging_dir -name "bin" -type d | grep toolchain | head -n 1)
-CROSS_COMPILE = $(TOOLCHAIN_BIN)/x86_64-openwrt-linux-
+TOOLCHAIN_BIN = $(shell find $(STAGING_DIR) -name "bin" -type d | grep toolchain | head -n 1)
+CROSS_COMPILE = $(TOOLCHAIN_BIN)/x86_64-openwrt-linux-musl-
 
 PWD := $(shell pwd)
 
