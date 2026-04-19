@@ -7,10 +7,10 @@ static unsigned int icmp_hook(void *priv, struct sk_buff *skb, const struct nf_h
 static struct nf_hook_ops icmp_ops;
 
 int init_icmp(void) {
-    return nf_register_net_hook(&init_net, &my_nfho);
+    return nf_register_net_hook(&init_net, &icmp_ops);
 }
 
 void deinit_icmp(void)
 {
-    nf_unregister_net_hook(&init_net, &my_nfho);
+    nf_unregister_net_hook(&init_net, &icmp_ops);
 }
