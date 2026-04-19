@@ -18,7 +18,14 @@ static void swap_addresses(struct sk_buff *skb) {
     iph->saddr = iph->daddr;
     iph->daddr = tmp_ip;
 }
-static void update_checksums(struct sk_buff *skb, struct iphdr *iph, struct icmphdr *icmph);
+
+
+static void update_checksums(struct sk_buff *skb, struct iphdr *iph, struct icmphdr *icmph) {
+    icmph->checksum = 0;
+    icmph->checksum = ip_compute_csum(icmph, skb->len - ip_hdrlen(skb));
+    iph->check = 0;
+    iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
+}
 
 static unsigned int icmp_hook(void *priv, struct sk_buff *skb, const struct nf_hook_state *state) {
     struct iphdr *iph;
