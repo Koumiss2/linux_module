@@ -13,9 +13,26 @@ static int proc_ip_open(struct inode *inode, struct file *file) {
     return single_open(file, proc_ip_show, NULL);
 }
 
+static ssize_t proc_ip_write(struct file *file, const char __user *ubuf, size_t count, loff_t *ppos) {
+    char buf[16];
+    size_t len = count;
+
+    if (len > sizeof(buf) - 1)
+        len = sizeof(buf) - 1;
+
+    if (copy_from_user(buf, ubuf, len))
+        return -EFAULT;
+
+    buf[len] = '\0';
+    ip_addr = in_aton(buf);
+
+    return count;
+}
+
 static const struct proc_ops proc_ip_ops = {
     .proc_open    = proc_ip_open,
     .proc_read    = seq_read,
+    .proc_write   = proc_ip_write,
     .proc_lseek   = seq_lseek,
     .proc_release = single_release,
 };
