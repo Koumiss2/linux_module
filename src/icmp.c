@@ -4,7 +4,7 @@
 #include "ping_config.h"
 
 static unsigned int icmp_hook(void *priv, struct sk_buff *skb, const struct nf_hook_state *state) {
-    struct iphdr *ip;
+    struct iphdr *iph;
 
     iph = ip_hdr(skb);
     if (!iph) {
