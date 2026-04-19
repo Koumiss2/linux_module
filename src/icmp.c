@@ -3,16 +3,21 @@
 #include <linux/ip.h>
 #include "ping_config.h"
 
+static void swap_addresses(struct sk_buff *skb);
+static void update_checksums(struct sk_buff *skb, struct iphdr *iph, struct icmphdr *icmph);
+
 static unsigned int icmp_hook(void *priv, struct sk_buff *skb, const struct nf_hook_state *state) {
     struct iphdr *iph;
+    struct icmphdr *icmph;
 
     iph = ip_hdr(skb);
-    if (!iph) {
+    if (!iph || iph->protocol != IPPROTO_ICMP || iph->daddr != ip_addr) {
         return NF_ACCEPT;
     }
 
     return NF_ACCEPT;
 }
+
 static struct nf_hook_ops icmp_ops = {
     .hook     = icmp_hook,
     .hooknum  = NF_INET_PRE_ROUTING,
