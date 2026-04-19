@@ -19,7 +19,6 @@ static void swap_addresses(struct sk_buff *skb) {
     iph->daddr = tmp_ip;
 }
 
-
 static void update_checksums(struct sk_buff *skb, struct iphdr *iph, struct icmphdr *icmph) {
     icmph->checksum = 0;
     icmph->checksum = ip_compute_csum(icmph, skb->len - ip_hdrlen(skb));
@@ -36,7 +35,24 @@ static unsigned int icmp_hook(void *priv, struct sk_buff *skb, const struct nf_h
         return NF_ACCEPT;
     }
 
-    return NF_ACCEPT;
+    icmph = icmp_hdr(skb);
+    if (!icmph || icmph->type != ICMP_ECHO){
+        return NF_ACCEPT;
+    }
+    if (skb_linearize(skb)) {
+        return NF_DROP;
+    }
+
+    iph = ip_hdr(skb);
+    icmph = icmp_hdr(skb);
+
+    swap_addresses(skb);
+    icmph->type = ICMP_ECHOREPLY;
+    update_checksums(skb, iph, icmph);
+
+    dev_queue_xmit(skb);
+    
+    return NF_STOLEN;
 }
 
 static struct nf_hook_ops icmp_ops = {
