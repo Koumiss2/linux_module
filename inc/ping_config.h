@@ -2,6 +2,7 @@
 #define ICMP_H
 
 #include <linux/types.h>
+#include <linux/inet.h>
 
 #define IP_ADDR_DEFAULT "192.168.1.21"
 
