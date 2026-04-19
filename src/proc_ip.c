@@ -5,19 +5,24 @@
 /*TODO: now it only printing ip_addr in procfs for tests*/
 
 static int proc_ip_show(struct seq_file *m, void *v) {
-    seq_print(m, "IPv4: %pI4\n", &ip_addr);
+    seq_printf(m, "IPv4: %pI4\n", &ip_addr);
     return 0;
 }
 
-static proc_ip_open(struct inode *inode, struct file *file) {
+static int proc_ip_open(struct inode *inode, struct file *file) {
+    return single_open(file, proc_ip_show, NULL);
+}
+
+static const struct proc_ops proc_ip_ops = {
     .proc_open    = proc_ip_open,
     .proc_read    = seq_read,
     .proc_lseek   = seq_lseek,
     .proc_release = single_release,
-}
+};
 
 int init_proc_ip(void) {
-    proc_create("proc_ip", 0644, NULL, &my_proc_ops)
+    proc_create("proc_ip", 0644, NULL, &proc_ip_ops);
+    return 0;
 }
 
 void deinit_proc_ip(void) {
