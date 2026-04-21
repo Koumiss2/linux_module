@@ -1,15 +1,12 @@
-#ifndef ICMP_H 
-#define ICMP_H
+#ifndef PING_CONFIG_H
+#define PING_CONFIG_H
 
 #include <linux/types.h>
 #include <linux/inet.h>
 
-#define IP_ADDR_DEFAULT "192.168.1.21"
+#define IP_ADDR_DEFAULT "192.168.1.67" //SixSeven
 
 extern __be32 ip_addr;
-
-int init_icmp(void);
-void deinit_icmp(void);
 
 int init_proc_ip(void);
 void deinit_proc_ip(void);
