@@ -3,7 +3,7 @@ ifneq ($(KERNELRELEASE),)
 ccflags-y += -I$(M)/inc
 
 obj-m := ping_mod.o
-ping_mod-y := src/main.o src/netif.o src/proc_ip.o src/icmp.o
+ping_mod-y := src/main.o src/netif.o src/proc_ip.o
 
 else
 
