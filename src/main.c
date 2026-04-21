@@ -21,8 +21,7 @@ static int __init hooks_init(void) {
     return 0;
 }
 
-static void __exit hooks_deinit(void)
-{
+static void __exit hooks_deinit(void) {
     deinit_netif();
     deinit_proc_ip();
 }
