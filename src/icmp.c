@@ -4,11 +4,17 @@
 #include <linux/icmp.h>
 #include <linux/etherdevice.h>
 #include "ping_config.h"
-
-/* Swap mac and ip addr in eth packet for l3 in OSI*/
-static void swap_ip(struct sk_buff *skb) {
+#ifdef ICMP_HOOK
+/* Swap mac and ip addr in eth packet for L2|l3 in OSI*/
+static void swap_addresses(struct sk_buff *skb) {
+    struct ethhdr *eth = eth_hdr(skb);
     struct iphdr *iph = ip_hdr(skb);
     __be32 tmp_ip;
+    unsigned char tmp_mac[ETH_ALEN];
+
+    ether_addr_copy(tmp_mac, eth->h_source);
+    ether_addr_copy(eth->h_source, eth->h_dest);
+    ether_addr_copy(eth->h_dest, tmp_mac);
 
     tmp_ip = iph->saddr;
     iph->saddr = iph->daddr;
@@ -27,28 +33,26 @@ static unsigned int icmp_hook(void *priv, struct sk_buff *skb, const struct nf_h
     struct icmphdr *icmph;
 
     iph = ip_hdr(skb);
-    if (!iph || iph->protocol != IPPROTO_ICMP || ip_addr == 0)
+    if (!iph || iph->protocol != IPPROTO_ICMP || iph->daddr != ip_addr) {
         return NF_ACCEPT;
-
-    if (iph->daddr != ip_addr)
-        return NF_ACCEPT;
+    }
 
     icmph = icmp_hdr(skb);
-    if (!icmph || icmph->type != ICMP_ECHO)
+    if (!icmph || icmph->type != ICMP_ECHO){
         return NF_ACCEPT;
-
-    if (skb_linearize(skb))
+    }
+    if (skb_linearize(skb)) {
         return NF_DROP;
+    }
 
     iph = ip_hdr(skb);
     icmph = icmp_hdr(skb);
 
-    swap_ip(skb);
+    swap_addresses(skb);
     icmph->type = ICMP_ECHOREPLY;
     update_checksums(skb, iph, icmph);
 
-    skb->pkt_type = PACKET_HOST;
-    netif_rx(skb);
+    dev_queue_xmit(skb);
 
     return NF_STOLEN;
 }
@@ -68,3 +72,4 @@ void deinit_icmp(void)
 {
     nf_unregister_net_hook(&init_net, &icmp_ops);
 }
+#endif
