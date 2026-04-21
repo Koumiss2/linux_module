@@ -14,6 +14,7 @@ void deinit_icmp(void);
 int init_proc_ip(void);
 void deinit_proc_ip(void);
 
-
+int init_netitf(void);
+void init_denetitf(void);
 
 #endif
