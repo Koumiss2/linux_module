@@ -8,7 +8,7 @@
 #include <linux/ip.h>
 #include <net/dst.h>
 #include "ping_config.h"
-
+#ifdef NETIF
 static struct net_device *vping_dev;
 
 static int vping_open(struct net_device *dev) {
@@ -175,3 +175,4 @@ void deinit_netif(void) {
     free_netdev(vping_dev);
     vping_dev = NULL;
 }
+#endif

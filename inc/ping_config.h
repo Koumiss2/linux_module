@@ -5,6 +5,7 @@
 #include <linux/inet.h>
 
 #define IP_ADDR_DEFAULT "192.168.1.67" //SixSeven
+#define NETIF
 
 extern __be32 ip_addr;
 

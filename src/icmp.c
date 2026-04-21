@@ -4,7 +4,7 @@
 #include <linux/icmp.h>
 #include <linux/etherdevice.h>
 #include "ping_config.h"
-
+#ifdef ICMP_HOOK
 /* Swap mac and ip addr in eth packet for L2|l3 in OSI*/
 static void swap_addresses(struct sk_buff *skb) {
     struct ethhdr *eth = eth_hdr(skb);
@@ -72,3 +72,4 @@ void deinit_icmp(void)
 {
     nf_unregister_net_hook(&init_net, &icmp_ops);
 }
+#endif
