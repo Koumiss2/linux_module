@@ -14,14 +14,20 @@ TOOLCHAIN_BIN = $(shell find $(STAGING_DIR) -name "bin" -type d | grep toolchain
 CROSS_COMPILE = $(TOOLCHAIN_BIN)/x86_64-openwrt-linux-musl-
 
 PWD := $(shell pwd)
+BUILD_DIR := $(PWD)/bin/tmp
+KO := ping_mod.ko
 
 all:
-	$(MAKE) -C $(KERNEL_DIR) M=$(PWD) ARCH=x86_64 CROSS_COMPILE=$(CROSS_COMPILE) modules
 	mkdir -p bin
-	cp ping_mod.ko bin/
+	rm -rf $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)/src $(BUILD_DIR)/inc
+	cp Makefile $(BUILD_DIR)/
+	cp src/*.c $(BUILD_DIR)/src/
+	cp inc/*.h $(BUILD_DIR)/inc/
+	$(MAKE) -C $(KERNEL_DIR) M=$(BUILD_DIR) ARCH=x86_64 CROSS_COMPILE=$(CROSS_COMPILE) modules
+	cp $(BUILD_DIR)/$(KO) bin/
 
 clean:
-	$(MAKE) -C $(KERNEL_DIR) M=$(PWD) ARCH=x86_64 CROSS_COMPILE=$(CROSS_COMPILE) clean
 	rm -rf bin/
 
 endif
